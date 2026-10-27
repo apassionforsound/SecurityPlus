@@ -1,0 +1,149 @@
+# CH. 3: Malicious Code
+
+---
+
+## 1. Overview of Malware
+
+> **Malware:** Software designed to cause harm to systems, devices, networks, or users. It gathers sensitive information, grants illicit remote access, and performs other unauthorized actions.
+
+---
+
+## 2. Common Malware Types
+
+### Ransomware
+Takes control of an asset or encrypts data, demanding a ransom payment for restoration.
+
+* **Delivery Vectors:** Phishing emails, exposed Remote Desktop Protocol (RDP) endpoints, unpatched public-facing vulnerabilities.
+* **Indicators of Compromise (IoCs):**
+  * Command and Control (C2 / C&C) traffic to known malicious IP addresses or domains.
+  * Living-off-the-Land (LotL) tactics: abusing legitimate administrative utilities to retain control.
+  * Lateral movement within the same network or trust boundaries.
+  * Widespread, rapid file encryption activity.
+  * Ransom notes or splash screens detailing payment instructions.
+  * Sudden spikes in data exfiltration (large outbound transfers).
+* **Mitigation:** Maintain isolated, immutable offline backups; patch perimeter access vectors.
+
+---
+
+### Trojans
+Disguises itself as legitimate software; once executed by the user, provides an entry path for an attacker.
+
+* **Remote Access Trojans (RATs):** Provide attackers with persistent remote administrative access, often blending in alongside legitimate remote management tools.
+* **Example:** *Triada Trojan*—distributed as a feature-enhanced third-party WhatsApp build. Once installed, it collects device intelligence, connects to a remote server, and forces ad clicks or premium subscriptions.
+* **Indicators of Compromise (IoCs):**
+  * File signatures and hash matches for known malicious installers.
+  * C2 hostnames and IP addresses.
+  * Suspicious directories and persistence files written to local storage.
+* **Mitigation:** End-user training against unverified downloads; Endpoint Detection and Response (EDR) and signature/heuristic anti-malware tools.
+
+---
+
+### Worms
+Self-replicating, self-installing software that spreads autonomously across networks without requiring user interaction.
+
+* **Examples:**
+  * *Stuxnet:* Advanced nation-state cyber worm targeting Iranian uranium enrichment centrifuges.
+  * *Raspberry Robin:* Worm propagating via infected USB drives, subsequently utilizing native Windows binaries (`cmd.exe`, `msiexec.exe`) to deploy second-stage payloads such as ransomware.
+* **Indicators of Compromise (IoCs):**
+  * Detection of known propagation files across storage media.
+  * Secondary staging downloads from remote infrastructure.
+  * Abnormal execution of built-in system tools (`cmd.exe`, `msiexec.exe`, PowerShell) for injection.
+  * Direct hands-on-keyboard adversary activity following infection.
+* **Mitigation:** Network-level controls, strict network segmentation, perimeter firewalls, and Intrusion Prevention Systems (IPS); often requires complete host re-imaging.
+
+---
+
+### Spyware
+Collects user activity (browsing history, keystrokes, personal credentials, installed software) and quietly exfiltrates it to remote servers.
+
+* **Indicators of Compromise (IoCs):**
+  * Persistent remote access hooks.
+  * Known malicious binary fingerprints.
+  * Hidden background processes mimicking core operating system services.
+  * Process injection attacks targeted at web browsers.
+* **Mitigation:** Software execution allowlists, application control policies, and specialized anti-spyware engines.
+
+---
+
+### Bloatware
+Unwanted, non-essential applications pre-installed on devices by original equipment manufacturers (OEMs).
+
+* **Risk:** While not explicitly malicious, it consumes local storage, degrades system performance, and expands the local attack surface with unpatched vulnerabilities.
+* **Mitigation:** Re-imaging systems with clean enterprise baseline images; aggressive de-bloating and uninstall procedures during deployment.
+
+---
+
+### Viruses
+Self-replicating code that attaches itself to existing files or programs. 
+
+* **Key Difference:** Unlike worms, viruses **do not** spread across networks autonomously; they require a host file and user interaction (execution) to trigger.
+* **Components:**
+  * **Trigger:** The condition or action that initiates execution.
+  * **Payload:** The intended malicious action performed on the host.
+
+#### Common Virus Classifications
+
+| Type | How It Operates |
+|---|---|
+| **Memory-Resident** | Lodges into system RAM; infects any file opened or executed while running. |
+| **Non-Memory-Resident** | Executes, locates target files to infect, and terminates immediately after execution. |
+| **Boot Sector** | Copies itself to the storage media's Master Boot Record (MBR) or boot partition, executing before the OS loads. |
+| **Macro Virus** | Embedded within productivity suite documents (e.g., Office documents); executes when macros run. |
+| **Email Virus** | Disseminates via malicious attachments or vulnerabilities within email client preview panes. |
+| **Fileless Virus** | Operates strictly in memory; maintains reboot persistence via registry run keys or WMI subscriptions without writing an executable to disk. |
+
+* **Mitigation:** File reputation systems, active IPS, modern endpoint protection, and system re-imaging if boot sectors or core files are compromised.
+
+---
+
+### Keyloggers
+Hardware or software designed to record keystrokes, mouse inputs, screen captures, or peripheral swipes (such as credit card readers).
+
+* **Collection Paths:** Hooking operating system APIs, custom kernel drivers, browser scripts, or direct memory scraping.
+* **Indicators of Compromise (IoCs):**
+  * Known keylogger file signatures and checksums.
+  * Suspicious outbound exfiltration to unknown C2 nodes.
+  * Unfamiliar hooks attached to input-handling processes.
+* **Mitigation:** Multi-Factor Authentication (MFA) to minimize the impact of harvested credentials; aggressive host patching and endpoint protection.
+
+---
+
+### Logic Bombs
+Dormant code embedded within an application that triggers a malicious payload only when specific conditions are met (e.g., a specific date, file deletion, or removal of a specific user account).
+
+* **Context:** Common vector for disgruntled insiders; embedded inside proprietary code bases.
+* **Indicators of Compromise (IoCs):** Difficult to identify via dynamic analysis because the binary appears benign until conditions trigger.
+* **Mitigation:** Multi-party peer code reviews, strict change controls, segregation of duties, and static code analysis (SAST).
+
+---
+
+### Rootkits
+Stealthy software packages designed to grant persistent administrative (root/kernel) backdoor access while hiding their presence from security tools.
+
+* **Mechanism:** Hooks low-level file-system drivers, alters system calls, or modifies the Master Boot Record (MBR) to blind monitoring tools to its files and processes.
+* **Indicators of Compromise (IoCs):**
+  * Discrepancies observed when scanning the drive from an external, trusted live environment.
+  * Unexpected listening ports or outbound reverse proxy tunnels.
+  * Unauthorized service creations or low-level configuration changes.
+* **Mitigation:** Verification via Secure Boot, trusted execution environments, host integrity checkers, and rebuilding/re-imaging compromised assets from scratch.
+
+---
+
+## 3. Command and Control (C2 / C&C) Architecture
+
+Adversaries rely on Command and Control infrastructure to remotely orchestrate compromised machines:
+
+* **Bots:** Compromised systems running malware controlled by an external attacker.
+* **Botnet:** A coordinated network of multiple bots managed under centralized or distributed command.
+* **Common C2 Communication Channels:**
+  * Standard web protocols (HTTP/HTTPS) using encrypted payloads routed through dynamic DNS, CDN proxies, or fast-flux domains to avoid static blocklists.
+  * Internet Relay Chat (IRC) connections (traditionally over TCP port 6667).
+  * Direct peer-to-peer (P2P) mesh networking among infected hosts.
+
+---
+
+## 4. Malware Analysis Methodologies
+
+1. **Reputation & Lookup Engines:** Querying public repositories (e.g., VirusTotal) to correlate file hashes, domains, and known signatures against industry threat feeds.
+2. **Sandbox Analysis (Dynamic Analysis):** Executing suspicious binaries in isolated virtual environments to observe run-time behaviors (process spawning, registry updates, network callbacks).
+3. **Static & Manual Code Analysis:** Decompiling or disassembling binaries via tools like Ghidra or IDA Pro to inspect instructions without executing the malware.
