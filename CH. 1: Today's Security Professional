@@ -1,0 +1,93 @@
+# CH. 1: Today's Security Professional
+
+---
+
+## 1. Core Security Concepts
+
+### Security Objectives vs. Threats (CIA vs. DAD)
+
+| CIA Triad (Objective) | Description | DAD Triad (Threat) | Description / Examples |
+|---|---|---|---|
+| **Confidentiality** | Ensures unauthorized users (`unAUs`) are not able to gain access. | **Disclosure** | Exposure of sensitive info to unauthorized users (data loss, data exfiltration). |
+| **Integrity** | Ensures no unauthorized users modify info or the system. | **Alteration** | Unauthorized modification of info (e.g., fraudulent transactions, typos). |
+| **Availability** | Ensures info/system is ready to meet the needs of a legitimate user. | **Denial** | Disruption of authorized users' legitimate access (e.g., DDoS). |
+
+> **Non-repudiation:** Ensures someone who performed an action cannot deny having taken it (e.g., Digital Signatures).
+
+---
+
+## 2. Risk Categories
+
+* **Financial Risk:** Breach causes monetary damage to the organization.
+  * *Examples:* System repairs, replacing lost equipment, revenue loss.
+* **Reputational Risk:** Breach causes negative publicity impacting business partner (`BP`) goodwill.
+  * *Examples:* Partners switch to competitors, stakeholders reduce business.
+* **Strategic Risk:** Prevents the ability to meet major goals or objectives; threatens the organization's existence or business plan.
+* **Operational Risk:** Prevents the ability to carry out day-to-day functions.
+  * *Examples:* Slowed business processes, order processing delays, long workarounds.
+* **Compliance Risk:** Breach causes an organization to run afoul of legal or regulatory requirements.
+  * *Examples:* Losing Protected Health Information (`PHI`) violating HIPAA.
+
+---
+
+## 3. Security Controls
+
+> **Security Controls:** Specific measures that fulfill **Control Objectives** (statements of a desired security state determined by business leaders to protect CIA).  
+> **Gap Analysis:** An evaluation of current controls to find areas that do not address objectives.
+
+### Control Categories
+
+| Category | Focus | Examples |
+|---|---|---|
+| **Technical** | Enforces CIA in the digital space | Firewalls, intrusion prevention systems (IPS), encryption |
+| **Operational** | Day-to-day processes in place | User access reviews, log monitoring |
+| **Managerial** | Procedural mechanisms focused on the risk management process | Risk assessments, security governance, change management |
+| **Physical** | Physical world security measures | Fences, locks, lighting, alarms |
+
+### Control Types
+
+| Control Type | Purpose | Examples |
+|---|---|---|
+| **Preventive** | Stops a security incident from occurring | Firewalls, encryption |
+| **Deterrent** | Discourages an attacker from attempting an attack | Guard dogs, barbed wire, warning signs |
+| **Detective** | Identifies and alerts to an ongoing or past incident | Intrusion Detection Systems (IDS) |
+| **Corrective** | Restores systems after an incident | Restoring backups, applying patches |
+| **Compensating** | Mitigates risk when primary security policies cannot be met | Alternative controls or temporary exceptions |
+| **Directive** | Mandates security actions by policy | Policies, procedures, standard operating guidelines |
+
+---
+
+## 4. Data Protection
+
+### States of Data
+* **Data at Rest:** Inactive data stored in persistent storage (hard drives, SSDs, databases).
+* **Data in Transit:** Data in motion across an internal network or the Internet.
+* **Data in Use:** Data actively residing in active memory / RAM during processing.
+
+### Data Loss Prevention (DLP)
+Helps organizations enforce information handling policies by locating unsecure sensitive stores and monitoring network egress.
+
+#### DLP Implementations
+* **Agent-Based DLP:** Software installed on the endpoint searching for and securing sensitive info; blocks local actions (e.g., blocking unauthorized USB plugins).
+* **Agentless (Network-Based) DLP:** Network appliances monitoring unencrypted traffic to block unauthorized egress.
+
+#### DLP Mechanisms of Action
+* **Pattern Matching:** Inspects data streams for known structures (e.g., Credit Card/SSN formats) or classification labels (e.g., `Top Secret`).
+* **Watermarking:** Applies electronic tags/metadata and monitors for unauthorized or unencrypted movement.
+
+---
+
+## 5. Data Management & Access Concepts
+
+### Data Minimization & Obfuscation
+* **Data Minimization:** Removes unnecessary sensitive info by deletion, de-identification, or obfuscation.
+* **Obfuscation Techniques:**
+  * **Hashing:** One-way mathematical transformation of data.
+  * **Tokenization:** Replaces a sensitive value with a random, unique identifier mapped via a protected lookup table.
+  * **Masking:** Replaces characters with blank/placeholder symbols (e.g., `XXXX-XXXX-XXXX-1234`).
+
+### Access Restrictions
+* **Geographic:** Restricts access based on physical origin/location (country or region).
+* **Permission / Role-Based:** Restricts access based on user authorization level (e.g., HR, Engineering, Training).
+* **Segmentation:** Groups sensitive systems into network zones with strict boundary controls to the rest of the network.
+* **Isolation:** Completely severs a system from external network connectivity (air-gapping).
