@@ -1,0 +1,141 @@
+# CH. 2: CS Threat Landscape
+
+---
+
+## 1. Threat Classification
+
+Threats can be categorized based on several key attributes:
+* **Internal vs. External:** Inside the security perimeter (employees, contractors) vs. outside actors.
+* **Level of Sophistication / Capability:** Technical prowess and ability to exploit zero-days or evade detection.
+* **Resources / Funding:** Financial backing ranging from zero budget to nation-state level.
+* **Intent / Motivation:** Ideological, financial gain, corporate espionage, sabotage, or state-sponsored war.
+
+---
+
+## 2. Threat Actor Profiles
+
+| Threat Actor | Skill & Capability | Resources & Funding | Primary Motivation | Characteristics & Examples |
+|---|---|---|---|---|
+| **Unskilled Attackers** | Low | Low | Thrill, notoriety, chaos | High-volume, indiscriminate attacks; rely on purchased or pre-packaged tools (Script Kiddies). |
+| **Hacktivists** | Variable | Low to Moderate | Ideological / "Greater Good" | Risk-tolerant, highly determined, politically or socially driven. *Example: Leaks and website defacement.* |
+| **Organized Crime** | Moderate to High | High | Illegal financial gain | Highly disciplined, financially driven operations targeting businesses, infrastructure, and consumers. |
+| **Nation-State (APTs)** | Very High | Extremely High (Government) | Espionage, warfare, geopolitical advantage | Advanced Persistent Threats (APTs); exploit Zero-Day vulnerabilities. *Example: Stuxnet (targeting Iranian enrichment networks).* |
+| **Insider Threats** | Variable | Typically Low (but privileged) | Revenge, financial gain, negligence | Current/former employees or contractors with authorized access; best prevented via behavioral assessments. |
+| **Competitors** | Moderate to High | High (Corporate) | Corporate espionage, market dominance | Targets customer data, intellectual property, and product roadmaps via dark web brokers or insiders. |
+
+### Organized Crime Focus Areas
+* **Cyber-dependent Crime:** Ransomware, unauthorized data exfiltration, DDoS, website defacement, and critical infrastructure attacks.
+* **Online Fraud:** Credit card fraud and Business Email Compromise (BEC).
+* **Exploitation & Material:** Child sexual abuse material (CSAM) and online solicitation.
+* **Dark Web Markets:** Illicit marketplaces for credentials, malware, and stolen data.
+* **Enablers:** Social engineering campaigns, money mule networks, and money laundering via cryptocurrencies.
+
+> **Shadow IT:** Software, hardware, or cloud services (e.g., personal Dropbox accounts) adopted without explicit IT approval, creating unmonitored attack paths and data leakage risks.
+
+---
+
+## 3. Hacker Classifications ("The Hats")
+
+* **Authorized (White Hat):** Granted explicit permission to discover vulnerabilities to improve security; typically hired penetration testers or internal staff.
+* **Semi-Authorized (Gray Hat):** Discovers vulnerabilities without explicit authorization, but reports findings without malicious intent (though often requesting a reward).
+* **Unauthorized (Black Hat):** Exploits vulnerabilities without authorization for malicious intent, financial gain, or disruption.
+
+---
+
+## 4. Attacker Motivations
+
+* Data Exfiltration
+* Espionage & Intelligence Gathering
+* Service Disruption & Sabotage
+* Extortion & Blackmail
+* Direct Financial Gain
+* Philosophical & Political Ideology
+* Ethical Vigilantism
+* Personal Grievance & Revenge
+* Pure Disruption & Chaos
+* Cyber Warfare
+
+---
+
+## 5. Threat Vectors & Attack Surfaces
+
+> **Threat Vector:** The path, mechanism, or tool an actor uses to gain access to a system.  
+> **Attack Surface:** The total sum of all vulnerabilities, services, applications, and network boundaries exposed to potential attackers.
+
+### Common Threat Vectors
+* **Message-Based:** Email (phishing, spam, business email compromise), SMS (smishing), instant messaging, and VoIP (vishing).
+* **Wired Network:** Direct physical connections (unsecured RJ-45 jacks, rogue physical access devices).
+* **Wireless Network:** Remote attacks over proximity protocols (rogue Wi-Fi access points, Bluetooth exploits).
+* **Systems & Software:** Vulnerable operating system configurations, unpatched open ports, and legacy applications.
+* **Files & Images:** Steganography or weaponized macros embedded inside documents and images.
+* **Removable Media:** Malicious payloads stored on dropped or infected USB storage devices.
+* **Cloud Infrastructure:** Misconfigured cloud access controls, excessive IAM permissions, or exposed storage buckets.
+* **Supply Chain:** Compromising upstream vendors or third-party code libraries to affect the entire downstream client base.
+
+---
+
+## 6. Threat Data & Intelligence
+
+> **Cyber Threat Intelligence (CTI):** The collection, analysis, and dissemination of information regarding active or potential threats, used to drive proactive defense and risk modeling.
+
+### Open-Source Intelligence (OSINT)
+Publicly accessible threat data feeds, lists, and advisories:
+
+* **Public & Community-Driven:**
+  * [Senki.org](https://www.senki.org/)
+  * The MISP Threat Sharing Project
+  * AT&T Open Threat Exchange (OTX)
+  * [Threatfeeds.io](https://threatfeeds.io/)
+* **Government Entities:**
+  * Cybersecurity & Infrastructure Security Agency (CISA)
+  * DoD Cyber Crime Center (DC3)
+  * CISA Automated Indicator Sharing (AIS) program
+* **Vendor Feeds & Research:**
+  * Microsoft Threat Intelligence
+  * Cisco Security Advisories
+
+### Proprietary & Closed-Source Intelligence
+Commercial cybersecurity vendors analyze proprietary customer telemetry and internal honeypots:
+* Sold as managed feeds, subscription tools, and platform integrations.
+* Reduces internal analysis overhead compared to triaging raw OSINT data.
+* Often provides visual representations such as real-time **threat maps**.
+
+---
+
+## 7. Assessing & Managing Threat Intelligence
+
+### Evaluating Threat Intel Quality
+Threat intelligence feeds must answer three fundamental criteria:
+1. **Timeliness:** Is the indicator available before an adversary attacks?
+2. **Accuracy:** Does it minimize false positives and accurately describe the threat?
+3. **Relevance:** Does the threat actually impact your environment and technology stack?
+
+### Confidence Scoring Scale
+Intelligence reports and feeds summarize confidence using standardized score ranges:
+
+| Confidence Level | Numerical Score |
+|---|---|
+| **Confirmed** | 90–100 |
+| **Probable** | 70–89 |
+| **Possible** | 50–69 |
+| **Doubtful** | 30–49 |
+| **Improbable** | 2–29 |
+| **Discredited** | 1 |
+
+---
+
+## 8. Standards, Protocols, & Sharing
+
+* **STIX (Structured Threat Information eXpression):** A standardized, structured XML/JSON language for describing threat intelligence (tactics, indicators of compromise, threat actors).
+* **OpenIOC:** An XML-based framework used to share machine-readable Indicators of Compromise (IoCs).
+* **TAXII (Trusted Automated eXchange of Indicator Information):** An application-layer transport protocol communicating over HTTPS to automate the exchange of STIX-formatted intelligence.
+* **ISACs (Information Sharing and Analysis Centers):** Sector-specific organizations (e.g., Financial Services, Healthcare, Aviation) facilitating threat intelligence sharing among critical infrastructure stakeholders.
+
+---
+
+## 9. Independent Research Channels
+
+* Vendor security bulletins and patch notes.
+* Real-time threat feeds and vulnerability trackers.
+* Industry security conferences (e.g., DEF CON, Black Hat, RSA).
+* Academic papers, research journals, and **Internet Request for Comments (RFC)** technical standards.
