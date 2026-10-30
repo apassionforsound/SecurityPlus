@@ -1,0 +1,135 @@
+# CH. 6: Application Security
+
+---
+
+## 1. Software Assurance & The SDLC
+
+> **Software Development Life Cycle (SDLC):** The steps in a model for software development throughout its life.
+
+### SDLC Phases
+* **Planning:** Investigate if effort is worth it, explore alternatives, calculate costs, decide whether to move forward.
+* **Requirements Definition:** Gather customer input for desired functionality and identify what current systems lack.
+  * *Security Requirement Definition* is critical in this phase for overall security posture.
+* **Design:** Determine functionality, architecture, integration points, data flows, and business processes.
+* **Coding:** Actual software development and developer unit testing.
+* **Testing:** Formal testing of fully integrated product, external data sources, and User Acceptance Testing (UAT).
+* **Training & Transition:** End-user training, installation, deployment, and transition to general use.
+* **Operation & Maintenance:** Ongoing patching, updates, and day-to-day support.
+* **Decommissioning:** End of Life (EOL), cost reduction, knowledge transfer, and secure disposal.
+
+---
+
+## 2. DevOps, DevSecOps, & CI/CD
+
+* **DevOps:** Combines software development and IT operations to optimize the SDLC using automated toolchains for coding, testing, packaging, and monitoring.
+* **DevSecOps:** Specifically integrates security into design, development, testing, and operations.
+* **Continuous Integration (CI):** Developers consistently check code into a shared repository, triggering automated builds and testing suites.
+* **Continuous Deployment (CD):** Automatically rolls out tested code into production as soon as tests pass.
+
+---
+
+## 3. Designing & Coding for Security
+
+### OWASP Top Proactive Controls
+* Define security requirements
+* Leverage security frameworks and libraries
+* Secure data access
+* Encode and escape data
+* Validate all input
+* Implement digital identity
+* Enforce access controls
+* Protect data everywhere
+* Implement security logging and monitoring
+* Handle all errors and exceptions
+
+### API Security
+* APIs define how clients request information and how servers respond across programming languages.
+* Security relies on authentication, authorization, proper data scoping, rate limiting, input filtering, and continuous monitoring.
+
+---
+
+## 4. Software Security Testing
+
+| Testing Type | Method | Key Focus |
+|---|---|---|
+| **Static Code Analysis** | Reviews code without executing it (white-box) | Finds syntax and logic flaws before runtime |
+| **Dynamic Code Analysis** | Executes running code while feeding it inputs | Evaluates software behavior in real time |
+| **Fuzzing** | Sends invalid, random, or malformed data to an application | Uncovers input validation flaws, memory leaks, and error-handling bugs |
+
+---
+
+## 5. Web & Application Vulnerabilities
+
+### Injection Vulnerabilities
+Allows an attacker to supply malicious input code to an app, tricking the server into executing it.
+* **SQL Injection (SQLi):** Attacker inputs database queries to expose or alter data.
+  * `' OR 1=1` returns all records because the statement evaluates to true.
+  * `' AND 1=2` returns nothing, confirming the query was executed.
+  * *Blind Timing-Based SQLi:* Uses delayed responses (e.g., `'; WAITFOR DELAY '00:00:15';--`) to confirm vulnerability.
+* **LDAP Injection:** Embeds commands into directory queries.
+* **XML Injection:** Embeds malicious payloads into XML documents.
+* **DLL Injection:** Forces a running process to load malicious dynamic libraries.
+* **Command Injection:** Exploits input flaws to execute raw operating system commands directly.
+
+### Authentication & Session Attacks
+* **Password Authentication Flaws:** Vulnerable to social engineering, network eavesdropping, credential dumps, and brute-force attacks.
+* **Cookie Stealing & Manipulation:** Bypasses authentication by stealing the browser session token via unencrypted connections, malware, or On-Path attacks.
+* **NTLM Pass-the-Hash:** Uses captured password hashes to authenticate directly to Active Directory domain systems without cracking cleartext passwords.
+* **Unvalidated Redirects:** Redirects users to malicious external domains after a transaction to steal credentials or sessions.
+
+### Authorization Vulnerabilities
+* **Insecure Direct Object References (IDOR):** Direct references to internal objects (e.g., Doc IDs in a URL) allow attackers to view unauthorized files by tweaking the ID.
+* **Directory Traversal:** Navigates file directories using operators (`../`) to access restricted server files.
+* **File Inclusion:**
+  * *Local File Inclusion (LFI):* Tricks the server into executing files already present locally on the host.
+  * *Remote File Inclusion (RFI):* Tricks the server into downloading and executing files from an external server, often deploying a **Web Shell**.
+* **Privilege Escalation:** Exploiting flaws to gain higher administrative or root access.
+
+### XSS, CSRF, & SSRF
+* **Cross-Site Scripting (XSS):** Injects malicious HTML/scripts into web pages viewed by other users.
+  * *Reflected XSS:* Payload is embedded directly in a link or form and immediately reflected back to the user.
+  * *Stored/Persistent XSS:* Payload is permanently saved to a remote database and executed when other users view the content.
+* **Cross-Site Request Forgery (CSRF / XSRF):** Exploits the trust a website has in a user's browser, tricking an authenticated user into executing unwanted commands.
+* **Server-Side Request Forgery (SSRF):** Tricks the server itself into visiting an attacker-supplied URL, exposing internal non-public resources.
+
+---
+
+## 6. Application Security Controls
+
+* **Input Validation:** Primary defense against application attacks; must be performed server-side.
+  * *Allowlisting:* Only accepts explicitly defined valid patterns, formats, or values.
+  * *Denylisting:* Blocks specific known malicious inputs (weaker defense).
+  * *Parameter Pollution:* Submitting duplicate variables to bypass filters that only inspect the first value.
+* **Parameterized Queries (Prepared Statements):** Separates user input from SQL commands, neutralizing SQLi.
+* **Web Application Firewall (WAF):** Operates at the application layer to inspect and filter HTTP/HTTPS traffic.
+* **Sandboxing:** Runs applications in restricted, isolated environments to limit the impact of exploitation.
+* **Code Signing:** Uses cryptographic signatures to ensure software and patches have not been altered.
+* **Version Control Repositories:** Manages source code history, enables rollbacks, and prevents orphaned dead code.
+
+---
+
+## 7. Memory & Execution Flaws
+
+* **Resource Exhaustion:** Applications fail to release allocated heap space (memory leaks), eventually causing the system to crash.
+* **Buffer Overflow:** Writing more data into memory than allocated, overwriting adjacent memory spaces or execution flow.
+* **Integer Overflow:** Calculations exceed the maximum memory limit allocated for integer variables.
+* **Pointer Dereferencing:** Null pointers trigger application crashes, disclosing debug data or bypassing controls.
+* **Race Conditions (TOCTTOU):**
+  * **Time-of-Check (TOC):** When the system verifies permissions.
+  * **Time-of-Use (TOU):** When the system executes the action.
+  * *Flaw:* Occurs when state changes between the check and the execution, allowing unauthorized actions.
+
+---
+
+## 8. Automation & Orchestration
+
+> **SOAR (Security Orchestration, Automation, & Response):** Platforms that automate repetitive security workflows across multiple tools and integrate threat feeds.
+
+### Common Automation Use Cases
+* **Identity & Provisioning:** Adding, modifying, or revoking accounts and security group memberships.
+* **Infrastructure Management:** Dynamic resource allocation, configuration baselines, and CI/CD testing.
+* **Incident Handling:** Automatic ticket routing, alerting, and isolating infected systems.
+
+### Trade-offs & Risks
+* **Benefits:** Massive time savings, consistent enforcement of security baselines, and reduced incident reaction times.
+* **Considerations:** Upfront implementation costs, technical debt from maintaining legacy scripts, and the risk of automated workflows becoming single points of failure.
