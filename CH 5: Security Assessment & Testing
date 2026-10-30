@@ -1,0 +1,183 @@
+# CH. 5: Security Assessment & Testing
+
+---
+
+## 1. Vulnerability Management
+
+> **Vulnerability Management:** Core programs that play a critical role in identifying, prioritizing, and remediating vulnerabilities within a cybersecurity environment.  
+> **Vulnerability Scanning:** The automated process of detecting new vulnerabilities as they arise and routing them through a prioritized remediation workflow.
+
+### Identifying Scan Targets
+Asset inventory and data criticality dictate the type, scope, and priority of scans:
+* **Information Classification:** What level of sensitive data resides on or transits the asset?
+* **Exposure:** Is the asset exposed to the public Internet or restricted to an isolated internal segment?
+* **Services Provided:** What network services, daemons, and open ports are active?
+* **Environment Tier:** Is it a Production, Staging/Test, or Development system?
+
+### Determining Scan Frequency
+* **Risk Appetite:** The organization's tolerance for risk vs. the window of vulnerability exposure.
+* **Regulatory & Compliance Mandates:** Required scanning intervals (e.g., PCI-DSS quarterly scanning).
+* **Technical Constraints:** Processing capacity limits, network latency, and target host stability.
+* **Business Continuity:** Avoiding operational disruptions during peak production hours.
+* **Licensing & Bandwidth:** Scanner seat limits, host quotas, and available network throughput.
+
+---
+
+## 2. Configuring & Executing Vulnerability Scans
+
+### Scan Sensitivity & Safety
+* Build custom scans by tailoring base vendor templates to balance deep discovery with system stability.
+* Disable unnecessary plugins to optimize scan runtimes and reduce network overhead.
+* Carefully evaluate and isolate **intrusive/unsafe plugins** before running them against production workloads.
+
+### Network vs. Credentialed vs. Agent-Based Scanning
+
+| Scanning Method | Architecture | Strengths | Trade-offs |
+|---|---|---|---|
+| **Network (Uncredentialed)** | Probes target hosts remotely across network boundaries | Simulates external attacker view; zero host configuration needed | Obstructed by firewalls/IPS; high false-positive rate; blind to local patch states |
+| **Credentialed** | Scanner logs into the target OS/database with valid credentials | High-fidelity visibility into configurations, installed packages, and local patches | Requires privileged account management across target fleets |
+| **Agent-Based** | Lightweight client software installed directly on the host | Continuous "inside-out" monitoring; independent of network controls or host connectivity | Overhead of agent lifecycle management across diverse operating systems |
+
+### Scan Perspectives
+* **External:** The perspective of an unauthenticated attacker probing from the public Internet.
+* **Internal:** The perspective of an insider or compromised workstation inside the corporate network.
+* **Datacenter / DMZ / Local Host:** Probes placed behind local firewalls, proxies, and IDS/IPS controls to assess raw host configuration.
+
+### Scanner Maintenance
+* **Scanner Engine Updates:** Keep scanner software patched to prevent exploitation of the security tool itself.
+* **Vulnerability Plugin Feeds:** Update signature and test plugin feeds daily to detect newly published Common Vulnerabilities and Exposures (CVEs).
+
+---
+
+## 3. SCAP & Scanning Tool Ecosystem
+
+### Security Content Automation Protocol (SCAP)
+A NIST-standardized framework for automating and reporting vulnerability and configuration management:
+
+* **CCE (Common Configuration Enumeration):** Standard nomenclature for system software security configuration settings.
+* **CPE (Common Platform Enumeration):** Standardized format for identifying operating systems, hardware, and application platforms.
+* **CVE (Common Vulnerabilities and Exposures):** Standardized catalog of publicly known cybersecurity software vulnerabilities.
+* **CVSS (Common Vulnerability Scoring System):** Open framework providing an objective numerical severity score for vulnerabilities.
+* **XCCDF (Extensible Configuration Checklist Description Format):** XML format for writing structured security checklists and test results.
+* **OVAL (Open Vulnerability and Assessment Language):** Declarative XML language defining the exact low-level testing procedures executed by automated assessment tools.
+
+### Vulnerability Assessment Tooling Categories
+* **Infrastructure Scanners:** Probe network-attached devices, fingerprint operating systems, and evaluate port/service configurations (*e.g., Tenable Nessus, Qualys VMDR, Rapid7 Nexpose, OpenVAS*).
+* **Software Application Testing:**
+  * **SAST (Static Application Security Testing):** White-box testing analyzing uncompiled source code or binaries without executing them.
+  * **DAST (Dynamic Application Security Testing):** Black-box testing evaluating applications in runtime by supplying malicious inputs.
+  * **IAST (Interactive Application Security Testing):** Hybrid approach running agents inside the runtime environment while executing automated test scripts.
+* **Web Application Vulnerability Scanners:** Purpose-built tools testing web applications for OWASP Top 10 flaws (*e.g., SQL Injection, XSS, CSRF, SSRF*).
+
+---
+
+## 4. Understanding CVSS v3.0
+
+The Common Vulnerability Scoring System (CVSS) evaluates vulnerabilities on a scale from **0.0 to 10.0** across eight base metrics grouped into **Exploitability**, **Scope**, and **Impact**.
+
+### Base Metric Values
+
+#### Exploitability Metrics
+* **Attack Vector (AV):** Context required to exploit the flaw.
+  * Physical (`P`): 0.20
+  * Local (`L`): 0.55
+  * Adjacent Network (`A`): 0.62
+  * Network (`N`): 0.85
+* **Attack Complexity (AC):** Conditions outside the attacker's direct control.
+  * High (`H`): 0.44
+  * Low (`L`): 0.77
+* **Privileges Required (PR):** Authorization level needed prior to attack.
+  * High (`H`): 0.27 (Scope Unchanged) / 0.50 (Scope Changed)
+  * Low (`L`): 0.62 (Scope Unchanged) / 0.68 (Scope Changed)
+  * None (`N`): 0.85 (Both scopes)
+* **User Interaction (UI):** Human involvement required.
+  * None (`N`): 0.85
+  * Required (`R`): 0.62
+
+#### Scope Metric
+* **Scope (S):** Whether the vulnerability affects resources beyond its direct execution environment.
+  * Unchanged (`U`): Affects only the vulnerable component.
+  * Changed (`C`): Compromises components managed by distinct security authorities (e.g., VM escape).
+
+#### Impact Metrics
+* **Confidentiality (C):**
+  * None (`N`): 0.00
+  * Low (`L`): 0.22
+  * High (`H`): 0.56
+* **Integrity (I):**
+  * None (`N`): 0.00
+  * Low (`L`): 0.22
+  * High (`H`): 0.56
+* **Availability (A):**
+  * None (`N`): 0.00
+  * Low (`L`): 0.22
+  * High (`H`): 0.56
+
+### Scoring Calculation Example
+* **Vector String:** `CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`
+
+$$\text{Impact Sub-score (ISS)} = 1 - [(1 - \text{C}) \times (1 - \text{I}) \times (1 - \text{A})] = 1 - [(1 - 0.56) \times (1 - 0) \times (1 - 0)] = 0.56$$
+
+$$\text{Impact} = 6.42 \times \text{ISS} = 6.42 \times 0.56 = 3.60$$
+
+$$\text{Exploitability} = 8.22 \times \text{AV} \times \text{AC} \times \text{PR} \times \text{UI} = 8.22 \times 0.85 \times 0.77 \times 0.85 \times 0.85 = 3.89$$
+
+$$\text{Base Score} = \text{RoundUp}(\text{Impact} + \text{Exploitability}) = \text{RoundUp}(3.60 + 3.89) = 7.5 \text{ (High)}$$
+
+### CVSS Base Severity Ratings
+
+| Score Range | Qualitative Rating |
+|---|---|
+| **0.0** | None |
+| **0.1 – 3.9** | Low |
+| **4.0 – 6.9** | Medium |
+| **7.0 – 8.9** | High |
+| **9.0 – 10.0** | Critical |
+
+---
+
+## 5. Scan Analysis & Vulnerability Categorization
+
+### Validating Findings
+* **False Positive:** Scanner alerts on a vulnerability that does not actually exist.
+* **False Negative:** Scanner fails to identify an active vulnerability.
+* **Verification Workflow:**
+  * Validate patch levels and package versions manually.
+  * Execute safe, non-destructive proof-of-concept tests.
+  * Correlate scan results with SIEM/syslog alerts and CMDB asset configurations.
+
+### Core Vulnerability Classes
+* **Missing Patches:** Outdated operating systems or libraries containing known vulnerabilities.
+* **Legacy Platforms:** End-of-Life (EOL) systems no longer receiving vendor security patches; require network isolation or compensative micro-segmentation.
+* **Misconfigurations:** Unsecured factory defaults, unchanged administrative passwords, open unnecessary ports, and excessive account privileges.
+* **Weak Cryptography:** Using deprecated ciphers/protocols (e.g., DES, RC4, MD5) or weak, static encryption keys.
+* **Insecure Protocols:** Unencrypted legacy protocols (e.g., Telnet, FTP, HTTP) that expose data and credentials in plaintext; remediate by upgrading to SSH, SFTP, and HTTPS/TLS.
+* **Verbose Error Messages:** Applications running in debug mode disclosing source code paths, database schema details, or stack traces to external users.
+
+---
+
+## 6. Penetration Testing & Threat Hunting
+
+> **Penetration Testing (Pentest):** A focused, adversarial assessment designed to actively exploit vulnerabilities to validate security controls and identify actionable attack paths.
+
+### Testing Types & Perspectives
+* **Physical Pentest:** Evaluates physical perimeters, biometric controls, tailgating resistance, and badge access systems.
+* **Offensive Assessment:** Red-team operations simulating actual adversary tactics, techniques, and procedures (TTPs).
+* **Defensive Assessment:** Blue-team evaluations assessing detection efficacy, SIEM alerting accuracy, and incident response runbooks.
+* **Integrated (Purple Team):** Collaborative, real-time testing where offensive actions are directly coordinated with defensive engineers to tune detection systems.
+
+#### Environmental Visibility
+* **Known Environment (White Box):** Assessors operate with full access to documentation, diagrams, network maps, and source code.
+* **Partially Known Environment (Gray Box):** Assessors are provided limited information (e.g., standard user credentials, high-level network topology).
+* **Unknown Environment (Black Box):** Assessors operate blind, simulating external adversaries relying strictly on reconnaissance.
+
+### Rules of Engagement (RoE)
+The authoritative operational document defining test parameters:
+* **Scope & Boundaries:** Explicitly listing in-scope and out-of-scope IP addresses, domains, and operational systems.
+* **Execution Windows:** Specific timeframes authorized for intrusive activity (e.g., during off-peak maintenance hours).
+* **Sensitive Data Handling:** Encryption standards, retention rules, and secure destruction procedures for findings and exfiltrated proof-of-concept files.
+* **Defensive Reaction Constraints:** Instructions on whether internal defense teams (SOC) should be notified in advance or allowed to block tester traffic.
+* **Communication & Escalation Paths:** Designated primary and emergency technical contacts for reporting accidental service disruption or unauthorized findings.
+* **Written Authorization:** Signed "Get Out of Jail Free" documentation granting explicit legal permission.
+
+### Phases of Penetration Testing Execution
